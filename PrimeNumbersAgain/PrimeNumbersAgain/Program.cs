@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace PrimeNumbersAgain
 {
     class Program
     {
+        //was confused on a lot of this so I did lots of research and found out the "SieveofEratosthenes" method
+        private static List<int> primes = new List<int>();
         static void Main(string[] args)
         {
             int n, prime;
@@ -25,9 +28,79 @@ namespace PrimeNumbersAgain
 
         static int FindNthPrime(int n)
         {
-            return 0;
+
+            int limit = EstimateLimit(n);
+
+            SieveOfEratosthenes(limit);
+
+            return primes[n - 1];
+        }
+        static int EstimateLimit(int n)
+        {
+            //this is a base case for small values
+            if (n < 6)
+            {
+                return 15;
+
+            }
+            double approx = n * (Math.Log(n) + Math.Log(Math.Log(n)));
+            return (int)Math.Ceiling(approx);
         }
 
+        //implemented this method that I found online
+        static void SieveOfEratosthenes(int limit)
+        {
+            bool[] isPrime = new bool[limit + 1];
+            for (int i = 2; i <= limit; i++)
+            {
+                isPrime[i] = true;
+            }
+               
+            for (int i = 2; i * i <= limit; i++)
+            {
+                if (isPrime[i])
+                {
+                    for (int j = i * i; j <= limit; j += i)
+                    {
+                        isPrime[j] = false;
+                    }
+                }
+            }
+            primes.Clear();
+            for (int i = 2; i <= limit; i++)
+            {
+                if (isPrime[i]) primes.Add(i);
+            }
+        }
+        static bool IsPrime(int n)
+        {
+            for (int i = 3; i < n; i++)
+            {
+                if (IsSkippable(i))
+                {
+                    continue;
+                }
+
+                if (n % i == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        static bool IsSkippable(int n)
+        {
+            if (n % 2 == 0 || n % n == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        
+
+        
         static int GetNumber()
         {
             int n = 0;
